@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万事屋的日常</title>
+    <style>
+        body {
+            background-image: url('https://img10.360buyimg.com/imgzone/jfs/t1/199300/24/46004/82333/67138ac8F52b98740/572181f853f8241b.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    
+        .container {
+            width: 100%;
+            max-width: 400px; /* 设置最大宽度为400px，适应手机端 */
+            padding: 10px;
+            background-color: rgba(234, 250, 255, 0.508); /* 半透明背景 */
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: rgb(83, 99, 151);
+            margin-bottom: 10px;
+        }
+        #progress-bars {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 80%;
+        }
+        .progress-wrapper {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .progress-bar-container {
+            flex: 4;
+            margin-left: 10px;
+        }
+        .progress {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #8ab5ff;
+            width: 0%;
+        }
+        #buttons-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #buttons-left, #buttons-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #buttons-bottom {
+            flex-direction: row;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .button {
+            padding: 7px 20px;
+            background-color: #89a8f5;
+            border: 2px solid #191765;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+        #image-area {
+            width: 220px;
+            height: 250px;
+            background-color: hwb(0 93% 7% / 0);
+            background-size: cover;
+            background-position: center;
+        }
+        #popup, #fish-popup, #commission-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+            z-index: 100;
+            width: 90%;
+            max-width: 300px;
+            margin-top: 10px;
+        }
+        .popup-content {
+            margin-bottom: 10px;
+        }
+        .progress-bar-fish {
+            background-color: #2196F3;
+            width: 0%;
+            height: 20px;
+            border-radius: 5px;
+        }
+        #garden-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+            z-index: 100;
+            width: 90%;
+            max-width: 400px;
+        }
+        .ingredient-slot {
+            width: 100px;
+            height: 30px;
+            border: 1px solid black;
+            display: inline-block;
+            margin: 5px;
+            text-align: center;
+            line-height: 30px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+            z-index: 100;
+            width: 90%;
+            max-width: 400px;
+        }
+        #banquet-status {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>万事屋</h1>
+
+    <!-- 进度条区域 -->
+    <div id="progress-bars">
+        <div class="progress-wrapper">
+            <span class="progress-title">体力值:</span>
+            <div class="progress-bar-container">
+                <div class="progress"><div class="progress-bar" id="stamina-bar"></div></div>
+            </div>
+        </div>
+        <div class="progress-wrapper">
+            <span class="progress-title">心情值:</span>
+            <div class="progress-bar-container">
+                <div class="progress"><div class="progress-bar" id="mood-bar"></div></div>
+            </div>
+        </div>
+        <div class="progress-wrapper">
+            <span class="progress-title">能力值:</span>
+            <div class="progress-bar-container">
+                <div class="progress"><div class="progress-bar" id="ability-bar"></div></div>
+            </div>
+        </div>
+        <div class="progress-wrapper">
+            <span class="progress-title">？？？:</span>
+            <div class="progress-bar-container">
+                <div class="progress"><div class="progress-bar" id="mystery-bar"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 天数计数器和下天按钮 -->
+    <div id="day-counter">
+        <span>今天是第 <span id="day-number">1</span> 天</span>
+        <button id="next-day" class="button" style="margin-left: 20px;">下一天</button>
+    </div>
+
+    <!-- 左侧按钮和图片 -->
+    <div id="buttons-wrapper">
+        <div id="buttons-left">
+            <div class="button" id="fish-tank-btn">鱼缸</div>
+            <div class="button" id="commission-btn">委托</div>
+            <div class="button" id="kitchen-btn">厨房</div>
+            <div class="button" id="garden-btn">花田</div>
+            <div class="button" id="feed-btn"onclick="handleClick('feed')">喂食</div>
+            <div class="button" id="banquet-btn" onclick="handleBanquet()">宴请</div>
+        </div>
+        <div id="image-area" style="background-image: url('https://img10.360buyimg.com/imgzone/jfs/t1/155602/25/48039/221686/6714f9f2F89443be3/5e23358c907704ff.png');"></div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div id="popup">
+        <div class="popup-content" id="popup-content"></div>
+        <button onclick="closePopup()">关闭</button>
+    </div>
+
+    <!-- 鱼缸弹窗 -->
+    <div id="fish-popup">
+        <p>给阿福喂食吧！但是喂得太胖的话……会不会有什么不好的事发生呢？</p>
+        <img src="https://img10.360buyimg.com/imgzone/jfs/t1/6023/39/40445/533172/67137ee9Fd0bf011f/e95e3e890272cd0c.png" alt="阿福" style="width: 100%;">
+        <button id="feed-fish-btn" class="button">喂鱼食</button>
+        <div>成长值: <div class="progress"><div class="progress-bar-fish" id="growth-bar"></div></div></div>
+        <div id="feed-status"></div>
+        <br>
+        <button onclick="closePopup()">关闭</button>
+    </div>
+
+    <div id="commission-popup">
+        <h3>作为“万事屋”老板伊孚的助理，请帮他挑选委托吧！如果不接委托的话，伊孚好像会变得不开心哦~</h3>
+        <div id="mission-list"></div>
+        <button onclick="closePopup()">关闭</button>
+    </div>
+
+    <!-- 花田弹窗 -->
+    <div id="garden-popup">
+        <p>和诺瓦吉彼岸花守护者伊孚一起照料他的花田吧！浇水能让彼岸花茁壮成长哦~彼岸花球茎是伊孚喜爱的食物！</p>
+        <img src="https://img10.360buyimg.com/imgzone/jfs/t1/162519/25/27131/214341/67139e26F21581a93/75ff318d27f73c96.png" alt="彼岸花" style="width: 100%;">
+        <button id="water-btn" class="button">浇水</button>
+        <button id="harvest-btn" class="button">采摘</button>
+        <div id="garden-status"></div>
+        <br>
+        <button onclick="closePopup()">关闭</button>
+    </div>
+
+    <!-- 戏结束页面 -->
+    <div id="game-over" style="display: none;" class="game-over">
+        <h1 id="game-over-title"></h1>
+        <p id="game-over-message"></p>
+        <button onclick="restartGame()" class="button">重新开始</button>
+    </div>
+
+    <!-- 在 <body> 标签中添加厨房弹窗 -->
+    <div id="kitchen-popup" class="popup" style="display: none;">
+        <h3>今天谁来做饭呢？</h3>
+        <button id="self-cook-btn" class="button">自己做饭</button>
+        <button id="yves-cook-btn" class="button">伊孚做饭</button>
+        <div id="kitchen-status"></div>
+        <button onclick="closePopup()">关闭</button>
+    </div>
+
+
+    <!-- 添加喂食弹窗 -->
+    <div id="feed-popup" class="popup" style="display: none;">
+        <h3>辛苦工作一整天，伊孚好像饿了，给他吃些什么呢？</h3>
+        <div id="food-options"></div>
+        <div id="feed-status"></div>
+        <button onclick="closeFeedPopup()">关闭</button>
+    </div>
+
+    <!-- 添加宴请弹窗 -->
+    <div id="banquet-popup" class="popup" style="display: none;">
+        <h3>今天请谁来吃饭好呢？最多可以选择三位客人哦~</h3>
+        <div id="guest-options"></div>
+        <p>今天你们要请大家吃什么呢？好期待呀！</p>
+        <div id="dish-options"></div>
+        <button id="start-banquet-btn" disabled>开饭啦！</button>
+        <div id="banquet-status" style="margin-top: 10px; border: 1px solid #ccc; padding: 10px;"></div>
+        <button onclick="closeBanquetPopup()">关闭</button>
+    </div>
+
+    <audio id="background-music" loop>
+        <source src="https://raw.githubusercontent.com/sollys123/dancsjd/bef0f207baf7c0928f1b4669cb2565ca4b7a484a/FullSizeRender(1).mp3" type="audio/mpeg">
+        你的浏览器不支持音频元素。
+    </audio>
+
+    <script>
+        // 将这些变量声明放在脚本的最开始
+        let selectedGuests = [];
+        let selectedDish = null;
+
+        // 确保 gameState 对象已经定义
+        let gameState = {
+            stamina: 100,
+            mood: 100,
+            ability: 10,
+            flowers: 5,
+            fishGrowth: 0,
+            lastFishFedDay: 0,
+            completedMissions: 0,
+            missionCompletedToday: false, // 新增标志
+            dishes: {
+                stew: 0,  // 初始库存设为 0
+                weirdDish: 0  // 初始库存设为 0
+            },
+            energy: 100,
+            currentDay: 1,
+        };
+        let day = 1;
+        let buttonClicked = {};
+        let selectedIngredients = [];
+
+        function updateProgressBars() {
+            document.getElementById('stamina-bar').style.width = `${gameState.energy}%`;
+            document.getElementById('mood-bar').style.width = `${gameState.mood}%`;
+            document.getElementById('ability-bar').style.width = `${gameState.ability}%`;
+            document.getElementById('mystery-bar').style.width = `${(gameState.flowers / 5) * 100}%`;
+        }
+
+        window.onload = function() {
+            updateProgressBars();
+        };
+
+        function showPopup(content) {
+            const popup = document.getElementById('popup');
+            if (popup) {
+                document.getElementById('popup-content').innerText = content;
+                popup.style.display = 'block';
+            } else {
+                console.error('Popup element not found');
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('fish-popup').style.display = 'none';
+            document.getElementById('commission-popup').style.display = 'none';
+            document.getElementById('garden-popup').style.display = 'none';
+            document.getElementById('kitchen-popup').style.display = 'none';
+            document.getElementById('yves-cook-popup').style.display = 'none';
+            document.getElementById('feed-popup').style.display = 'none'; // 添加这一行
+        }
+
+        function handleClick(type) {
+            if (buttonClicked[type]) {
+                showPopup("今日此项行动数已用尽，请明天再来哦~");
+            } else {
+                buttonClicked[type] = true;
+                if (type === 'fishTank') {
+                    document.getElementById('fish-popup').style.display = 'block';
+                    updateFishTankStatus();
+                } else if (type === 'garden') {
+                    document.getElementById('garden-popup').style.display = 'block';
+                } else if (type === 'kitchen') {
+                    if (gameState.mood <= 0) {
+                        showPopup("伊孚现在好像没有心情做饭哦，尝试完成委托提升伊孚的心情值吧~");
+                    } else {
+                        document.getElementById('kitchen-popup').style.display = 'block';
+                        updateIngredientButtons(); // 确保这行代码被执行
+                        console.log('Kitchen popup opened');
+                    }
+                } else if (type === 'feed') {
+                    showFeedPopup();
+                } else {
+                    showPopup(type + " 已被点击！");
+                }
+            }
+        }
+
+        document.getElementById('fish-tank-btn').addEventListener('click', () => handleClick('fishTank'));
+        document.getElementById('kitchen-btn').addEventListener('click', () => handleClick('kitchen'));
+        document.getElementById('garden-btn').addEventListener('click', () => handleClick('garden'));
+
+        document.getElementById('feed-fish-btn').addEventListener('click', function() {
+            if (gameState.lastFishFedDay === gameState.currentDay) {
+                document.getElementById('feed-status').innerText = "今天阿福已经吃饱啦~";
+            } else {
+                gameState.lastFishFedDay = gameState.currentDay;
+                gameState.fishGrowth = Math.min(100, gameState.fishGrowth + 10);
+                document.getElementById('growth-bar').style.width = gameState.fishGrowth + '%';
+                document.getElementById('feed-status').innerText = "阿福吃得很开心！";
+                console.log('Fish growth:', gameState.fishGrowth); // 添加这行来调试
+            }
+        });
+
+        document.getElementById('water-btn').addEventListener('click', function() {
+            if (buttonClicked['gardenAction']) {
+                document.getElementById('garden-status').innerText = "今日此项行动次数已用尽，明天再继续哦~";
+            } else {
+                buttonClicked['gardenAction'] = true;
+                gameState.flowers = Math.min(gameState.flowers + 1, 5);
+                updateProgressBars();
+                document.getElementById('garden-status').innerText = "浇水成功！彼岸花茁壮成长了！";
+            }
+        });
+
+        document.getElementById('harvest-btn').addEventListener('click', function() {
+            if (buttonClicked['gardenAction']) {
+                document.getElementById('garden-status').innerText = "今日此项次数已用尽，明天再继续哦~";
+            } else {
+                buttonClicked['gardenAction'] = true;
+                gameState.flowers--;
+                updateProgressBars();
+                document.getElementById('garden-status').innerText = "采摘成功！请小心使用彼岸花。";
+                if (gameState.flowers <= 0) {
+                    gameOver("游戏失败", "很遗憾，你们采完了亚尔裴谢尔所有的彼岸花。没有彼岸花吸收了毒素，毒素在全国大范围扩散，亚尔裴谢尔直接灭亡在毒素的诅咒下……彼岸花虽然好吃，但不要贪杯哦~");
+                }
+            }
+        });
+
+        const missions = [
+            "救下房顶上的猫，难度：★",
+            "帮助23岁高龄的老奶奶马路，难度：★",
+            "调节邻里矛盾，难度：★",
+            "帮忙修屋顶，难度：★★",
+            "帮忙看管一天羊群，难度：★★",
+            "教人种菜技巧，难度：★★",
+            "帮助璐卡老师当助教，难度：★★★",
+            "参加义警队的会议，难度：★★★",
+            "应富人区的克劳德家邀请前去商讨事宜，难度：★★★",
+            "应妲尤的邀请前往研究院参观，难度：★★★"
+        ];
+
+        const specialMissions = [
+            "集结所有人与处刑人决战，难度：★★★★★",
+            "应聘王室厨师，难度：★★★★★"
+        ];
+
+        function handleCommission() {
+            if (gameState.stamina < 20) {
+                showPopup("体力不足无法执行任务，请通过“喂食”恢复！");
+                return;
+            }
+
+            if (buttonClicked['commission']) {
+                showPopup("今日委托次数已用尽，请明天再来吧~");
+                return;
+            }
+
+            const selectedMissions = [];
+            const availableMissions = [...missions];
+            if (gameState.completedMissions >= 10) {
+                availableMissions.push(...specialMissions);
+            }
+
+            while (selectedMissions.length < 3) {
+                const randomIndex = Math.floor(Math.random() * availableMissions.length);
+                const mission = availableMissions[randomIndex];
+                if (!selectedMissions.includes(mission)) {
+                    selectedMissions.push(mission);
+                }
+            }
+
+            const missionList = document.getElementById('mission-list');
+            missionList.innerHTML = '';
+            selectedMissions.forEach(mission => {
+                const button = document.createElement('button');
+                button.className = 'button';
+                button.textContent = mission;
+                button.onclick = () => executeMission(mission);
+                missionList.appendChild(button);
+            });
+
+            document.getElementById('commission-popup').style.display = 'block';
+        }
+
+        document.getElementById('commission-btn').addEventListener('click', handleCommission);
+
+        function executeMission(mission) {
+            console.log('executeMission called with mission:', mission);
+            
+            if (buttonClicked['commission']) {
+                showPopup("今日委托次数已用尽，请明天再来吧~");
+                return;
+            }
+
+            if (gameState.energy < 20) {
+                showPopup("体力不足，无法执行任务。请通过喂食来恢复体力！");
+                return;
+            }
+
+            const success = gameState.ability >= 10;
+
+            // 无论成功与否，都消耗20点体力
+            gameState.energy = Math.max(0, gameState.energy - 20);
+
+            if (success) {
+                gameState.mood = Math.min(100, gameState.mood + 10);
+                gameState.ability = Math.min(100, gameState.ability + 4);
+                showPopup("任务成功！");
+            } else {
+                gameState.mood = Math.max(0, gameState.mood - 10);
+                showPopup("任务失败！");
+            }
+
+            buttonClicked['commission'] = true;
+            gameState.completedMissions++;
+            gameState.missionCompletedToday = true; // 设置标志
+            updateProgressBars();
+            closePopup();
+        }
+
+        function gameOver(title, message) {
+            const gameOverScreen = document.createElement('div');
+            gameOverScreen.style.position = 'fixed';
+            gameOverScreen.style.top = '0';
+            gameOverScreen.style.left = '0';
+            gameOverScreen.style.width = '100%';
+            gameOverScreen.style.height = '100%';
+            gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            gameOverScreen.style.color = 'white';
+            gameOverScreen.style.display = 'flex';
+            gameOverScreen.style.flexDirection = 'column';
+            gameOverScreen.style.justifyContent = 'center';
+            gameOverScreen.style.alignItems = 'center';
+            gameOverScreen.style.zIndex = '1000';
+
+            gameOverScreen.innerHTML = `
+                <h1>${title}</h1>
+                <p>${message}</p>
+                <button onclick="restartGame()">重新开始</button>
+            `;
+
+            document.body.appendChild(gameOverScreen);
+        }
+
+        function restartGame() {
+            // 重置游戏状态
+            gameState = {
+                mood: 100,
+                energy: 100,
+                dishes: {
+                    stew: 1,
+                    weirdDish: 1
+                }
+                // ... 其他初始状态 ...
+            };
+
+            // 移除游戏结束画面
+            const gameOverScreen = document.querySelector('div[style*="position: fixed"]');
+            if (gameOverScreen) {
+                gameOverScreen.remove();
+            }
+
+            // 重置其他必要的状态
+            selectedGuests = [];
+            selectedDish = null;
+            updateProgressBars();
+            updateDishOptions();
+            updateGuestButtons();
+            updateDishButtons();
+            updateStartBanquetButton();
+
+            // 关闭宴请弹窗
+            closeBanquetPopup();
+        }
+
+        document.getElementById('next-day').addEventListener('click', function() {
+            gameState.currentDay++;
+            document.getElementById('day-number').textContent = gameState.currentDay;
+            
+            // 检查是否完成了委托任务
+            if (!gameState.missionCompletedToday) {
+                gameState.mood = Math.max(0, gameState.mood - 10);
+            }
+
+            // 重置每日行动和标志
+            buttonClicked = {};
+            gameState.missionCompletedToday = false;
+            
+            // 更新显示
+            updateEnergyDisplay();
+            updateFoodOptions();
+            updateProgressBars(); // 确保更新进度条
+        });
+
+        document.getElementById('self-cook-btn').addEventListener('click', function() {
+            if (buttonClicked['cooking']) {
+                document.getElementById('kitchen-status').innerText = "今天已经做过饭啦~";
+            } else {
+                buttonClicked['cooking'] = true;
+                gameState.dishes.stew++;
+                document.getElementById('kitchen-status').innerText = "瑟蕾思的拿手炖菜+1";
+            }
+        });
+
+        document.getElementById('yves-cook-btn').addEventListener('click', function() {
+            if (buttonClicked['cooking']) {
+                document.getElementById('kitchen-status').innerText = "今天已做过饭啦~";
+            } else {
+                buttonClicked['cooking'] = true;
+                gameState.dishes.weirdDish++;
+                document.getElementById('kitchen-status').innerText = "伊孚的奇怪料理+1";
+            }
+        });
+
+        function updateIngredientButtons() {
+            console.log('Updating ingredient buttons. Fish growth:', gameState.fishGrowth);
+            const ingredientsButtons = document.getElementById('ingredients-buttons');
+            if (!ingredientsButtons) {
+                console.error('Ingredients buttons container not found');
+                return;
+            }
+            ingredientsButtons.innerHTML = '';
+            
+            const ingredients = ['potato', 'beef', 'secretSpice', 'vegetable'];
+            ingredients.forEach(ing => {
+                if (gameState.ingredients && gameState.ingredients[ing] > 0) {
+                    const btn = document.createElement('button');
+                    btn.textContent = getIngredientName(ing);
+                    btn.onclick = () => selectIngredient(ing);
+                    ingredientsButtons.appendChild(btn);
+                }
+            });
+
+            if (gameState.fishGrowth >= 100) {
+                console.log('Adding Afu button');
+                const fishBtn = document.createElement('button');
+                fishBtn.textContent = "料理阿福";
+                fishBtn.onclick = () => {
+                    document.getElementById('cook-status').innerText = "瑟蕾思拒绝了伊孚烹饪阿福的请求。阿福这么可爱怎么可以吃阿福！！！";
+                };
+                ingredientsButtons.appendChild(fishBtn);
+            }
+
+            console.log('Ingredient buttons updated. Button count:', ingredientsButtons.children.length);
+        }
+
+        function selectIngredient(ingredient) {
+            if (selectedIngredients.length < 3) {
+                selectedIngredients.push(ingredient);
+                updateIngredientSlots();
+                if (selectedIngredients.length === 3) {
+                    document.getElementById('cook-btn').disabled = false;
+                }
+            }
+        }
+
+        function updateIngredientSlots() {
+            const slots = document.querySelectorAll('.ingredient-slot');
+            slots.forEach((slot, index) => {
+                if (selectedIngredients[index]) {
+                    slot.textContent = getIngredientName(selectedIngredients[index]);
+                } else {
+                    slot.textContent = '';
+                }
+            });
+        }
+
+        document.getElementById('cook-btn').addEventListener('click', function() {
+            gameState.dishes.weirdDish++;
+            document.getElementById('cook-status').innerText = "伊孚的奇怪料理+1";
+            buttonClicked['cooking'] = true;
+            selectedIngredients.forEach(ing => gameState.ingredients[ing]--);
+            selectedIngredients = [];
+            updateIngredientSlots();
+            updateIngredientButtons();
+            this.disabled = true;
+        });
+
+        function showFeedPopup() {
+            const currentDay = getCurrentDay();
+
+            if (gameState.lastFedDay === currentDay) {
+                document.getElementById('feed-status').innerText = "伊孚今天已经吃饱啦！";
+            } else {
+                document.getElementById('feed-status').innerText = "";
+            }
+            updateFoodOptions();
+            document.getElementById('feed-popup').style.display = 'block';
+        }
+
+        function updateFoodOptions() {
+            const foodOptions = document.getElementById('food-options');
+            foodOptions.innerHTML = '';
+
+            const currentDay = getCurrentDay();
+
+            if (gameState.lastFedDay === currentDay) {
+                foodOptions.innerHTML = "<p>伊孚今天已经吃饱啦！</p>";
+                return;
+            }
+
+            let availableDishes = 0;
+
+            if (gameState.dishes.stew > 0) {
+                const stewBtn = document.createElement('button');
+                stewBtn.textContent = `瑟蕾思的拿手炖菜 (${gameState.dishes.stew})`;
+                stewBtn.addEventListener('click', function() {
+                    feedYves('stew');
+                });
+                foodOptions.appendChild(stewBtn);
+                availableDishes++;
+            }
+
+            if (gameState.dishes.weirdDish > 0) {
+                const weirdDishBtn = document.createElement('button');
+                weirdDishBtn.textContent = `伊孚的奇怪料理 (${gameState.dishes.weirdDish})`;
+                weirdDishBtn.addEventListener('click', function() {
+                    feedYves('weirdDish');
+                });
+                foodOptions.appendChild(weirdDishBtn);
+                availableDishes++;
+            }
+
+            if (availableDishes === 0) {
+                foodOptions.innerHTML = "<p>啊哦，橱柜空空如也，快去厨房准备菜品吧~</p>";
+            }
+        }
+
+        function feedYves(dish) {
+            const currentDay = getCurrentDay(); // 假设你有一个获取当前游戏天数的函数
+
+            if (gameState.lastFedDay === currentDay) {
+                document.getElementById('feed-status').innerText = "伊孚今天已经吃饱啦！";
+                return;
+            }
+
+            if (dish === 'stew' && gameState.dishes.stew > 0) {
+                gameState.energy = Math.min(gameState.energy + 30, 100);
+                gameState.dishes.stew--;
+                document.getElementById('feed-status').innerText = "伊孚觉得非常美味！";
+                gameState.lastFedDay = currentDay;
+            } else if (dish === 'weirdDish' && gameState.dishes.weirdDish > 0) {
+                gameState.energy = Math.min(gameState.energy + 20, 100);
+                gameState.dishes.weirdDish--;
+                document.getElementById('feed-status').innerText = "伊孚觉得自己的厨艺又进步了！";
+                gameState.lastFedDay = currentDay;
+            }
+            updateEnergyDisplay();
+            updateFoodOptions();
+        }
+
+        function updateEnergyDisplay() {
+            const staminaBar = document.getElementById('stamina-bar');
+            if (staminaBar) {
+                const percentage = (gameState.energy / 100) * 100; // 假设最大体力值100
+                staminaBar.style.width = `${percentage}%`;
+                console.log('Energy updated:', gameState.energy, 'Percentage:', percentage); // 添加这行来调试
+            } else {
+                console.error('Stamina bar element not found');
+            }
+        }
+
+        updateEnergyDisplay(); // 添这行
+
+        function closeFeedPopup() {
+            const feedPopup = document.getElementById('feed-popup');
+            if (feedPopup) {
+                feedPopup.style.display = 'none';
+            }
+            // 重置喂食状态示
+            document.getElementById('feed-status').innerText = '';
+        }
+
+        function getCurrentDay() {
+            return gameState.currentDay;
+        }
+
+        // 添加宴请按钮点击件
+        document.getElementById('banquet-btn').addEventListener('click', handleBanquet);
+
+        function handleBanquet() {
+            console.log('handleBanquet called');
+            if (gameState.mood <= 0) {
+                showPopup("伊孚现在好像没有心情参加聚会哦，尝试完成委托提升伊孚的心情吧~");
+                return;
+            }
+
+            const banquetPopup = document.getElementById('banquet-popup');
+            if (banquetPopup) {
+                banquetPopup.style.display = 'block';
+                updateGuestOptions();
+                updateDishOptions();
+            } else {
+                console.error('Banquet popup element not found');
+            }
+        }
+
+        function updateGuestOptions() {
+            console.log('updateGuestOptions called');
+            const guestOptions = document.getElementById('guest-options');
+            if (!guestOptions) {
+                console.error('Guest options element not found');
+                return;
+            }
+            guestOptions.innerHTML = '';
+            const guests = ["璐卡", "阿道夫", "安", "马蒂斯", "安库"];
+            guests.forEach(guest => {
+                const btn = document.createElement('button');
+                btn.textContent = guest;
+                btn.onclick = () => selectGuest(guest);
+                guestOptions.appendChild(btn);
+            });
+        }
+
+        function selectGuest(guest) {
+            console.log('selectGuest called with guest:', guest);
+            const index = selectedGuests.indexOf(guest);
+            if (index > -1) {
+                selectedGuests.splice(index, 1);
+            } else if (selectedGuests.length < 3) {
+                selectedGuests.push(guest);
+            }
+            updateGuestButtons();
+            updateStartBanquetButton();
+        }
+
+        function updateGuestButtons() {
+            console.log('updateGuestButtons called');
+            const buttons = document.querySelectorAll('#guest-options button');
+            buttons.forEach(button => {
+                if (selectedGuests.includes(button.textContent)) {
+                    button.style.backgroundColor = '#4CAF50';
+                } else {
+                    button.style.backgroundColor = '';
+                }
+            });
+        }
+
+        function updateDishOptions() {
+            console.log('updateDishOptions called');
+            const dishOptions = document.getElementById('dish-options');
+            if (!dishOptions) {
+                console.error('Dish options element not found');
+                return;
+            }
+            dishOptions.innerHTML = '';
+
+            if (gameState.dishes.stew > 0 || gameState.dishes.weirdDish > 0) {
+                if (gameState.dishes.stew > 0) {
+                    const stewBtn = document.createElement('button');
+                    stewBtn.textContent = `瑟蕾思的拿手炖菜 (${gameState.dishes.stew})`;
+                    stewBtn.onclick = () => selectDish('stew');
+                    dishOptions.appendChild(stewBtn);
+                }
+                if (gameState.dishes.weirdDish > 0) {
+                    const weirdDishBtn = document.createElement('button');
+                    weirdDishBtn.textContent = `伊孚的奇怪料理 (${gameState.dishes.weirdDish})`;
+                    weirdDishBtn.onclick = () => selectDish('weirdDish');
+                    dishOptions.appendChild(weirdDishBtn);
+                }
+            } else {
+                dishOptions.innerHTML = "<p>啊哦，橱柜空空如也，快去厨房准备菜品吧~</p>";
+            }
+        }
+
+        function selectDish(dish) {
+            console.log('selectDish called with dish:', dish);
+            selectedDish = dish;
+            updateDishButtons();
+            updateStartBanquetButton();
+        }
+
+        function updateDishButtons() {
+            console.log('updateDishButtons called');
+            const buttons = document.querySelectorAll('#dish-options button');
+            buttons.forEach(button => {
+                if ((selectedDish === 'stew' && button.textContent.includes('瑟蕾思的拿手炖菜')) ||
+                    (selectedDish === 'weirdDish' && button.textContent.includes('伊孚的奇怪料理'))) {
+                    button.style.backgroundColor = '#4CAF50';
+                } else {
+                    button.style.backgroundColor = '';
+                }
+            });
+        }
+
+        function updateStartBanquetButton() {
+            console.log('updateStartBanquetButton called');
+            const startBanquetBtn = document.getElementById('start-banquet-btn');
+            if (startBanquetBtn) {
+                const isEnabled = selectedGuests.length > 0 && selectedGuests.length <= 3 && selectedDish;
+                startBanquetBtn.disabled = !isEnabled;
+                console.log('Start banquet button enabled:', isEnabled);
+                
+                // 添加这行代码
+                startBanquetBtn.onclick = isEnabled ? startBanquet : null;
+            } else {
+                console.error('Start banquet button not found');
+            }
+        }
+
+        function startBanquet() {
+            console.log('startBanquet called');
+            const banquetStatus = document.getElementById('banquet-status');
+            
+            if (!banquetStatus) {
+                console.error('Banquet status element not found');
+                return;
+            }
+
+            banquetStatus.innerHTML = '';
+
+            const reactions = {
+                stew: {
+                    '璐卡': "璐卡老师称赞了瑟蕾思的手艺，并笑着摸了摸她的头。",
+                    '阿道夫': "阿道夫不自觉地颤抖了一下身体。",
+                    '安库': "安库不自觉地颤抖了一下身体。",
+                    '马蒂斯': "马蒂斯害羞地低下头，小声称赞这是他吃过最好吃的炖菜。",
+                    '席安': "席安表示做的还不错，符合他的口味。"
+                },
+                weirdDish: {
+                    '璐卡': "璐卡老师笑着把盘子推了一米远。",
+                    '阿道夫': "阿道夫拒绝了伊孚让他尝尝的请求，并喝了一口酒。",
+                    '安库': "安库逃回了海边的山洞里，表示那里比较安全。",
+                    '马蒂斯': "马蒂斯激动地称赞伊孚的料理，与他交谈甚欢。",
+                    '席安': "尝试一口后，席安晕了过去。"
+                }
+            };
+
+            if (selectedDish === 'stew') {
+                gameState.mood = Math.min(100, gameState.mood + 5);
+                gameState.energy = Math.min(100, gameState.energy + 20);
+                gameState.dishes.stew--;
+
+                selectedGuests.forEach(guest => {
+                    banquetStatus.innerHTML += `<p>${guest}：${reactions.stew[guest]}</p>`;
+                });
+            } else if (selectedDish === 'weirdDish') {
+                gameState.dishes.weirdDish--;
+
+                selectedGuests.forEach(guest => {
+                    banquetStatus.innerHTML += `<p>${guest}：${reactions.weirdDish[guest]}</p>`;
+                });
+
+                if (selectedGuests.includes('席安') && Math.random() < 0.2) {
+                    setTimeout(() => {
+                        gameOver("游戏失败", "很遗憾，席安·布洛菲沃思在尝试了伊孚的料理后，永远地离开了这个世界。因为没有来得及备份，失去了院长的研究院无法再进行再生人的生产。当亚尔裴谢尔所有人都到达23岁时，这个国家将会不复存在，所有人只能无望地等待那一刻的来临……");
+                    }, 1000);
+                    return;
+                }
+            }
+
+            updateProgressBars();
+            updateDishOptions();
+        }
+
+        function closeBanquetPopup() {
+            console.log('closeBanquetPopup called');
+            document.getElementById('banquet-popup').style.display = 'none';
+            selectedGuests = [];
+            selectedDish = null;
+            updateStartBanquetButton();
+        }
+
+        // 确保在 DOM 加载完成后添加事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded event fired');
+            const startBanquetBtn = document.getElementById('start-banquet-btn');
+            if (startBanquetBtn) {
+                startBanquetBtn.addEventListener('click', startBanquet);
+                console.log('Event listener added to start banquet button');
+            } else {
+                console.error('Start banquet button not found');
+            }
+        });
+
+        // 添加一个新函数来更新鱼缸状态
+        function updateFishTankStatus() {
+            const feedFishBtn = document.getElementById('feed-fish-btn');
+            const feedStatus = document.getElementById('feed-status');
+            
+            if (gameState.lastFishFedDay === gameState.currentDay) {
+                feedFishBtn.disabled = true;
+                feedStatus.innerText = "今天阿福已经吃饱啦~";
+            } else {
+                feedFishBtn.disabled = false;
+                feedStatus.innerText = "";
+            }
+        }
+
+        // 新增函数：根据心情值更新图片
+        function updateImage() {
+            const imageArea = document.getElementById('image-area');
+            const img = imageArea.querySelector('img');
+            
+            if (gameState.mood < 50) {
+                img.src = "https://img10.360buyimg.com/imgzone/jfs/t1/232664/33/27403/228336/67150444Fb23bd8bd/554aa131d7af252a.png";
+            } else {
+                img.src = "https://img10.360buyimg.com/imgzone/jfs/t1/155602/25/48039/221686/6714f9f2F89443be3/5e23358c907704ff.png";
+            }
+        }
+
+        // 在初始化函数中调用updateImage
+        function initializeGame() {
+            updateProgressBar('mood-bar', gameState.mood);
+            updateProgressBar('hunger-bar', gameState.energy);
+            updateMoney();
+            updateImage(); // 新增：初始化时更新图片
+        }
+
+        let mood = 100; // 确保有这个全局变量
+
+        function updateMood(change) {
+            mood += change;
+            mood = Math.max(0, Math.min(100, mood));
+            document.getElementById('mood-value').textContent = mood;
+            updateProgressBar('mood-bar', mood);
+            
+            // 调用更新图片函数
+            updateImage();
+        }
+
+        function updateProgressBar(id, value) {
+            const bar = document.getElementById(id);
+            bar.style.width = value + '%';
+        }
+
+        function initializeGame() {
+            updateProgressBar('mood-bar', mood);
+            // 其他初始化代码...
+            updateImage(); // 初始化时更新图片
+        }
+
+        // 添加一个测试函数，用于手动改变心情值
+        function testMoodChange(change) {
+            updateMood(change);
+            console.log("当前心情值：", mood);
+        }
+
+        // 页面加载完成后初始化游戏
+        window.onload = initializeGame;
+
+        // 在现有的JavaScript代码中添加以下内容
+
+        function playBackgroundMusic() {
+            const music = document.getElementById('background-music');
+            music.volume = 0.5; // 设置音量，范围0-1
+            
+            // 尝试播放音乐
+            const playPromise = music.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // 自动播放成功
+                    console.log("背景音乐开始播放");
+                }).catch(error => {
+                    // 自动播放被阻止
+                    console.log("自动播放被阻止，需要用户交互才能播放音乐");
+                    // 你可以在这里添加一个按钮或其他方式让用户手动触发播放
+                });
+            }
+        }
+
+        // 在页面加载完成后调用播放函数
+        window.addEventListener('load', playBackgroundMusic);
+
+        // 可以添加一个函数来切换音乐的播放/暂停
+        function toggleBackgroundMusic() {
+            const music = document.getElementById('background-music');
+            if (music.paused) {
+                music.play();
+            } else {
+                music.pause();
+            }
+        }
+    </script>
+</body>
+</html>
