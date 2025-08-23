@@ -811,10 +811,19 @@
             currentConversationIndex = index;
             const conversation = allConversations[index];
             if (!conversation) return;
-            
+
+            // 若需要高亮特定消息，先计算到该消息的路径
+            if (highlightId) {
+                const newPath = buildPathToNode(conversation.originalMapping, highlightId);
+                if (Object.keys(newPath).length > 0) {
+                    conversation.selectedPath = newPath;
+                    updateDB();
+                }
+            }
+
             renderMessages(conversation); // 传递整个对话对象
             updateActiveSidebarItem();
-            
+
             if (highlightId) {
                 setTimeout(() => {
                     const targetMessage = chatContainer.querySelector(`[data-message-id="${highlightId}"]`);
@@ -846,7 +855,8 @@
             let currentNodeId = rootId;
 
             while(currentNodeId) {
-                const node = mapping[currentNodeId];
+                const nodeId = currentNodeId; // 捕获当前节点ID，避免闭包引用被后续循环修改
+                const node = mapping[nodeId];
                 if (!node) break;
 
                 if (node.message) {
@@ -866,7 +876,7 @@
 
                         const container = document.createElement('div');
                         container.className = `message-container ${msg.author.role}`;
-                        container.dataset.messageId = currentNodeId;
+                        container.dataset.messageId = nodeId;
 
                         const avatar = document.createElement('img');
                         avatar.className = 'avatar';
@@ -887,12 +897,12 @@
                         // --- 添加气泡收藏按钮 ---
                         const favBtn = document.createElement('button');
                         favBtn.className = 'favorite-btn';
-                        const isFavorited = conversation.favorited_messages.has(currentNodeId);
+                        const isFavorited = conversation.favorited_messages.has(nodeId);
                         if (isFavorited) {
                             favBtn.classList.add('favorited');
                         }
                         favBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-                        favBtn.onclick = () => toggleMessageFavorite(currentNodeId, favBtn); // 不再传递索引
+                        favBtn.onclick = () => toggleMessageFavorite(nodeId, favBtn); // 使用捕获的节点ID
                         bubble.appendChild(favBtn);
 
 
@@ -910,7 +920,7 @@
                         }
 
                         if (node.children.length > 1) {
-                            const switcher = createBranchSwitcher(currentConversationIndex, currentNodeId, node.children);
+                            const switcher = createBranchSwitcher(currentConversationIndex, nodeId, node.children);
                             bubble.appendChild(switcher);
                         }
                         
@@ -930,7 +940,7 @@
                 }
 
                 if (node.children && node.children.length > 0) {
-                    const selectedChildIndex = path[currentNodeId] || 0;
+                    const selectedChildIndex = path[nodeId] || 0;
                     currentNodeId = node.children[selectedChildIndex] || node.children[0];
                 } else {
                     currentNodeId = null;
@@ -1391,6 +1401,24 @@
 
             modalOverlay.style.display = 'flex';
             input.focus();
+        }
+
+        function buildPathToNode(mapping, targetId) {
+            const path = {};
+            let currentId = targetId;
+            while (currentId && mapping[currentId]) {
+                const parentId = mapping[currentId].parent;
+                if (!parentId) break;
+                const parentNode = mapping[parentId];
+                if (parentNode && parentNode.children) {
+                    const childIndex = parentNode.children.indexOf(currentId);
+                    if (childIndex !== -1) {
+                        path[parentId] = childIndex;
+                    }
+                }
+                currentId = parentId;
+            }
+            return path;
         }
 
         function parseSpecialContent(text) {
