@@ -811,10 +811,19 @@
             currentConversationIndex = index;
             const conversation = allConversations[index];
             if (!conversation) return;
-            
+
+            // 若需要高亮特定消息，先计算到该消息的路径
+            if (highlightId) {
+                const newPath = buildPathToNode(conversation.originalMapping, highlightId);
+                if (Object.keys(newPath).length > 0) {
+                    conversation.selectedPath = newPath;
+                    updateDB();
+                }
+            }
+
             renderMessages(conversation); // 传递整个对话对象
             updateActiveSidebarItem();
-            
+
             if (highlightId) {
                 setTimeout(() => {
                     const targetMessage = chatContainer.querySelector(`[data-message-id="${highlightId}"]`);
@@ -1391,6 +1400,24 @@
 
             modalOverlay.style.display = 'flex';
             input.focus();
+        }
+
+        function buildPathToNode(mapping, targetId) {
+            const path = {};
+            let currentId = targetId;
+            while (currentId && mapping[currentId]) {
+                const parentId = mapping[currentId].parent;
+                if (!parentId) break;
+                const parentNode = mapping[parentId];
+                if (parentNode && parentNode.children) {
+                    const childIndex = parentNode.children.indexOf(currentId);
+                    if (childIndex !== -1) {
+                        path[parentId] = childIndex;
+                    }
+                }
+                currentId = parentId;
+            }
+            return path;
         }
 
         function parseSpecialContent(text) {
