@@ -1,0 +1,101 @@
+:root {
+  --bg: #F8F9FB;
+  --card: #FFFFFF;
+  --line: #ECEEF3;
+  --purple: #7C6AD9;
+  --purple-hover: #8B79E6;
+  --green: #20C997;
+  --orange: #FFA94D;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: #333;
+  margin: 0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+nav button {
+  background: var(--purple);
+  color: white;
+  border: none;
+  margin-right: .5rem;
+  padding: .5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+nav button:hover {
+  background: var(--purple-hover);
+}
+
+.view {
+  padding: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+#task-list li {
+  list-style: none;
+  padding: .5rem;
+  margin-bottom: .5rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priority {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: .5rem;
+}
+
+.priority-1 { background: var(--green); }
+.priority-2 { background: var(--purple); }
+.priority-3 { background: var(--orange); }
+.priority-4 { background: #aaa; }
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day-cell {
+  height: 60px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  position: relative;
+  cursor: pointer;
+}
+
+.day-cell .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--purple);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+}
+
+#year-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}

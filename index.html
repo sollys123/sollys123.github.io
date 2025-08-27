@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作计划网页</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>工作计划</h1>
+    <nav>
+      <button id="view-day-btn">日</button>
+      <button id="view-month-btn">月</button>
+      <button id="view-year-btn">年</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="quick-add">
+      <input type="text" id="quick-input" placeholder="例如：明天 14:00 开会" />
+      <button id="quick-add-btn">添加</button>
+    </section>
+
+    <section id="day-view" class="view">
+      <h2 id="day-title"></h2>
+      <ul id="task-list"></ul>
+    </section>
+
+    <section id="month-view" class="view hidden">
+      <h2 id="month-title"></h2>
+      <div id="calendar"></div>
+    </section>
+
+    <section id="year-view" class="view hidden">
+      <h2 id="year-title"></h2>
+      <div id="year-content"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
